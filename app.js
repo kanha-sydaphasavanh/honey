@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 // const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const hbs = require('hbs');
 
 const indexRouter = require('./routes/index');
 
@@ -10,8 +11,11 @@ const indexRouter = require('./routes/index');
 let app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+const viewPath = path.join(__dirname, 'views')
+app.set('views', path.join(viewPath));
 app.set('view engine', 'hbs');
+const partialsPath = path.join(__dirname,"views/partials");
+hbs.registerPartials(partialsPath);
 
 app.use(logger('dev'));
 app.use(express.json());
