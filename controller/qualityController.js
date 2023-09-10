@@ -1,5 +1,5 @@
 const qualityController = (req, res, next) => {
-    res.render('quality', { title: 'quality' });
+    res.render('quality', { title: 'Quality' });
 };
 
 module.exports = { qualityController };
