@@ -9,19 +9,22 @@
                   </div>
                </div>
                <div class="col-md-10 offset-md-1 ">
-                  <form id="request" class="main_form" method="post" action="/send">
+                  <form id="request" class="main_form" method="post" action="/send" enctype="multipart/form-data">
                      <div class="row">
                         <div class="col-md-6 ">
-                           <input class="contactus" placeholder="Full Name" type="text" name="name"> 
+                           <input class="contactus" placeholder="Full Name" type="text" name="name" value="aaa"> 
                         </div>
                         <div class="col-md-6">
-                           <input class="contactus" placeholder="Email" type="email" name="email">                          
+                           <input class="contactus" placeholder="Email" type="email" name="email" value="k.sydaphasavanh@gmail.com">                          
                         </div>
                         <div class="col-md-6">
-                           <input class="contactus" placeholder="Phone Number" type="phone" name="phone">                          
+                           <input class="contactus" placeholder="Phone Number" type="phone" name="phone" value="0000000000">                          
                         </div>
                         <div class="col-md-6">
-                           <textarea class="textarea" placeholder="Message" type="textarea" Message="message" name="message"></textarea>
+                           <textarea class="textarea" placeholder="Message" type="textarea" Message="message" name="message" >MESSAGE</textarea>
+                        </div>
+                        <div class="col-md-6">
+                           <input type="file" name="fs" class="">
                         </div>
                         <div class="col-md-12">
                            <button class="send_btn">Send</button>
