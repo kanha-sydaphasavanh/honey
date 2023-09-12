@@ -1,13 +1,12 @@
 const sender = require("../public/javascripts/sender")
 
 const orderController = (req, res, next) => {
-    // const email = req.body.email;
-    // const name = req.body.name;
-    // const phone = req.body.phone;
-    // const message = req.body.message;
-    // console.log(typeof email + ' / ' + typeof name + '/' + typeof phone + '/' + typeof message);
-
-    sender(req,res)
+    const { email, name, message, phone, fs } = req.body;
+    // console.log(req.body);
+    console.log('controller '+res);
+    console.log(email, name, message, phone, fs);
+    // res.status(200).json(req.body.file.path);
+    sender(req, res) 
 
 };
 
