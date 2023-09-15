@@ -3,9 +3,8 @@ const nodemailer = require("nodemailer");
 const multer = require("multer");
 // const bot = require("./botconfig.json");
 const fs = require('fs');
-const { Stream } = require('stream');
-// const memoryStorage = multer.memoryStorage();
-// const upload = multer({ storage: memoryStorage });
+// const { Stream } = require('stream');
+
 
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -18,32 +17,6 @@ let transporter = nodemailer.createTransport({
     },
 });
 
-// const uploadAttachmentFile = async (req) => {
-//     return new Promise((resolve, reject) => {
-//         upload.single('fs')(req, null, (err) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//                 resolve(req);
-//             }
-//         });
-//     });
-// }
-async function supprimerFichier(filePath) {
-    fs.unlink(filePath, (err) => {
-        if (err) {
-            res.status(400).json('Erreur lors de la suppression du fichier :', err);
-            // console.error('Erreur lors de la suppression du fichier :', err);
-        }
-    });
-}
-async function readFile(filePath) {
-    fs.createReadStream(filePath, err => {
-        if (err)
-            res.status(500).json(err);
-    }).once;
-    
-}
 const sender = async (req, res) => {
 
     const mailOpts = {
@@ -54,32 +27,34 @@ const sender = async (req, res) => {
     }
 
     let emailGenerate = new Promise((resolve, reject) => {
-        transporter.sendMail(mailOpts, (err, info) => {
-            if (err)
-                reject(err)
-            else
-                resolve(info.response);
-        });
+        const fileStream = fs.createReadStream(req.body.file.path);
+        fileStream.on('open', (data, err) => {
+            if (err) reject(err)
+            mailOpts.attachments = [
+                {
+                    filename: req.body.file.originalname,
+                    content: fileStream
+                },
+            ];
+            resolve(data);
+        })
     });
 
-    mailOpts.attachments = [
-        {
-            filename: req.body.file.originalname,
-            content: readFile(req.body.file.path)
-        },
-    ];
-    // if (req.body.file) {
-    //     await supprimerFichier(req.body.file.path)
-    // }
-    console.log(mailOpts);
-
-    // res.status(200).json(req.body)
-    emailGenerate.then((response) => {
-        console.log("Response : " + response);
-        res.status(200).redirect('/');
-    }).catch((err) => {
-        res.status(500).render("error", { error: err })
-    })
+    emailGenerate
+        .then(() => {
+            transporter.sendMail(mailOpts, () => {
+                res.status(200).redirect('/');
+            });
+        })
+        .then(() => {
+            fs.unlink(req.body.file.path, (err) => {
+                if (err)
+                    res.status(500)
+            });
+        })
+        .catch((err) => {
+            res.status(500).render("error", { error: err })
+        })
 };
 
 module.exports = sender;
