@@ -1,5 +1,5 @@
 #Version de nodejs
-FROM node:latest
+FROM node:14
 
 # Créez un répertoire de travail dans le conteneur
 WORKDIR /app
