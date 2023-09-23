@@ -18,7 +18,6 @@ let transporter = nodemailer.createTransport({
 });
 
 const sender = async (req, res) => {
-
     const mailOpts = {
         from: process.env.EMAIL_SENDER,
         to: req.body.email,
@@ -26,19 +25,26 @@ const sender = async (req, res) => {
         text: JSON.stringify(req.body)
     }
 
+
     let emailGenerate = new Promise((resolve, reject) => {
-        const fileStream = fs.createReadStream(req.body.file.path);
-        fileStream.on('open', (data, err) => {
-            if (err) reject(err)
-            mailOpts.attachments = [
-                {
-                    filename: req.body.file.originalname,
-                    content: fileStream
-                },
-            ];
-            resolve(data);
-        })
+        if (req.body.file) {
+            const fileStream = fs.createReadStream(req.body.file.path);
+
+            fileStream.on('open', (data, err) => {
+                if (err) reject(err)
+                mailOpts.attachments = [
+                    {
+                        filename: req.body.file.originalname,
+                        content: fileStream
+                    },
+                ];
+                resolve(data);
+            })
+        } else {
+            resolve();
+        }
     });
+
 
     emailGenerate
         .then(() => {
@@ -47,10 +53,10 @@ const sender = async (req, res) => {
             });
         })
         .then(() => {
-            fs.unlink(req.body.file.path, (err) => {
-                if (err)
-                    res.status(500)
-            });
+            if (req.body.file)
+                fs.unlink(req.body.file.path, (err) => {
+                    if (err) res.status(500).json({ err: err })
+                });
         })
         .catch((err) => {
             res.status(500).render("error", { error: err })
